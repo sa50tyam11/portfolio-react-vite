@@ -1,9 +1,14 @@
-import Particles from "../components/ui/Particles";
+import Lightning from "../components/ui/Lightning";
 
 function Hero() {
   return (
     <section id="home" className="hero">
-      <Particles />
+      <Lightning
+        hue={230}
+        speed={1}
+        intensity={1}
+        size={1}
+      />
 
       <div className="hero-content">
         <h1>Hi, I’m Satyam</h1>
