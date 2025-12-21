@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  background: #0b0b0d;
+  color: #ffffff;
+  font-family: system-ui, sans-serif;
+}
+
+section {
+  padding: 4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+h1, h2 {
+  margin-bottom: 1rem;
+}
