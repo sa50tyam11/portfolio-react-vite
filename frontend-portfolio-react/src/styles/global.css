@@ -13,3 +13,30 @@ section {
 h1, h2 {
   margin-bottom: 1rem;
 }
+/* nav */
+.navbar {
+  position: sticky;
+  top: 0;
+  background: rgba(11, 11, 13, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links li {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.nav-links li:hover {
+  opacity: 1;
+}

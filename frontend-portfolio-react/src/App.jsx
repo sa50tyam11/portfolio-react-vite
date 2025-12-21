@@ -1,11 +1,4 @@
-function App() {
-  return (
-    <div style={{ color: "red", fontSize: "40px", padding: "40px" }}>
-      REACT IS WORKING
-    </div>
-  );
-}
-
+import Navbar from "./components/Navbar";
 import Hero from "./sections/Hero";
 import About from "./sections/About";
 import Skills from "./sections/Skills";
@@ -15,6 +8,7 @@ import Contact from "./sections/Contact";
 function App() {
   return (
     <>
+      <Navbar />
       <Hero />
       <About />
       <Skills />
@@ -25,4 +19,3 @@ function App() {
 }
 
 export default App;
-
