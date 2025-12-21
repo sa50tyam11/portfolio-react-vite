@@ -40,3 +40,17 @@ h1, h2 {
 .nav-links li:hover {
   opacity: 1;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.nav-links a:hover {
+  opacity: 1;
+}
