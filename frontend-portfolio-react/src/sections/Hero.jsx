@@ -1,45 +1,51 @@
 import Lightning from "../components/ui/Lightning";
 import "./Hero.css";
-import { FaGithub, FaLinkedin, FaDiscord, FaInstagram } from "react-icons/fa";
 
 const Hero = () => {
     return (
         <section className="hero">
+            {/* Lightning Background */}
             <div className="hero-bg">
-                <Lightning />
+                <Lightning hue={230} speed={1} intensity={1} size={1} />
             </div>
 
-            <div className="hero-overlay" />
-
+            {/* Hero Content */}
             <div className="hero-content">
-                <span className="hero-eyebrow">
-                    ⚡ Hey there, I’m <strong>Satyam</strong>
-                </span>
+                <p className="hero-eyebrow">Hey there, I’m <span>Satyam</span></p>
 
                 <h1 className="hero-title">
-                    Building <span className="gradient-text">clean</span>, modern <br />
-                    web experiences with <span className="gradient-text">React</span>
+                    Building <span className="grad grad-clean">clean</span>, modern <br />
+                    web experiences with <span className="grad grad-react">React</span>
                 </h1>
 
-                <p className="hero-sub">
+                <p className="hero-subtitle">
                     Frontend Developer · UI / UX <br />
                     I focus on performant, scalable and visually refined interfaces.
                 </p>
 
                 <div className="hero-actions">
-                    <a href="#work" className="btn primary">View Work</a>
-                    <a href="#contact" className="btn ghost">Contact Me</a>
+                    <a href="#projects" className="btn-primary">View Work</a>
+                    <a href="#contact" className="btn-secondary">Contact Me</a>
                 </div>
 
                 <div className="hero-socials">
-                    <a href="#" aria-label="GitHub"><FaGithub /></a>
-                    <a href="#" aria-label="LinkedIn"><FaLinkedin /></a>
-                    <a href="https://discord.com/users/1448638445059702784" aria-label="Discord"><FaDiscord /></a>
-                    <a href="#" aria-label="Instagram"><FaInstagram /></a>
+                    <a href="https://github.com/sa50tyam11" target="_blank" aria-label="GitHub">
+                        <i className="ri-github-fill" />
+                    </a>
+                    <a href="https://www.linkedin.com/in/satyamkrjha5011" target="_blank" aria-label="LinkedIn">
+                        <i className="ri-linkedin-fill" />
+                    </a>
+                    <a href="https://discord.com/users/1448638445059702784" target="_blank" aria-label="Discord">
+                        <i className="ri-discord-fill" />
+                    </a>
+                    <a href="https://instagram.com/_satyamkrjha_" target="_blank" aria-label="Instagram">
+                        <i className="ri-instagram-line" />
+                    </a>
                 </div>
             </div>
         </section>
     );
 };
+
 
 export default Hero;
