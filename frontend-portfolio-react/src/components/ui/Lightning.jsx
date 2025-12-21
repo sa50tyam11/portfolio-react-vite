@@ -2,11 +2,11 @@ import { useRef, useEffect } from "react";
 import "./Lightning.css";
 
 const Lightning = ({
-  hue = 230,
+  hue = 270,
   xOffset = 0,
-  speed = 1,
-  intensity = 1,
-  size = 1,
+  speed = 0.6,
+  intensity = 0.9,
+  size = 1.2,
 }) => {
   const canvasRef = useRef(null);
 
@@ -15,26 +15,20 @@ const Lightning = ({
     if (!canvas) return;
 
     const resizeCanvas = () => {
-      const { clientWidth, clientHeight } = canvas;
-      canvas.width = clientWidth;
-      canvas.height = clientHeight;
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
     };
 
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    // ✅ IMPORTANT: transparent WebGL context
     const gl = canvas.getContext("webgl", {
       alpha: true,
       premultipliedAlpha: false,
     });
 
-    if (!gl) {
-      console.error("WebGL not supported");
-      return;
-    }
+    if (!gl) return;
 
-    // ✅ transparent background
     gl.clearColor(0, 0, 0, 0);
 
     const vertexShaderSource = `
@@ -45,7 +39,7 @@ const Lightning = ({
     `;
 
     const fragmentShaderSource = `
-      precision mediump float;
+      precision highp float;
 
       uniform vec2 iResolution;
       uniform float iTime;
@@ -55,7 +49,7 @@ const Lightning = ({
       uniform float uIntensity;
       uniform float uSize;
 
-      #define OCTAVE_COUNT 10
+      #define OCTAVE_COUNT 6
 
       vec3 hsv2rgb(vec3 c) {
         vec3 rgb = clamp(
@@ -66,34 +60,21 @@ const Lightning = ({
         return c.z * mix(vec3(1.0), rgb, c.y);
       }
 
-      float hash11(float p) {
-        p = fract(p * .1031);
-        p *= p + 33.33;
-        p *= p + p;
-        return fract(p);
-      }
-
-      float hash12(vec2 p) {
-        vec3 p3 = fract(vec3(p.xyx) * .1031);
-        p3 += dot(p3, p3.yzx + 33.33);
-        return fract((p3.x + p3.y) * p3.z);
-      }
-
-      mat2 rotate2d(float a) {
-        float c = cos(a);
-        float s = sin(a);
-        return mat2(c, -s, s, c);
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
       }
 
       float noise(vec2 p) {
         vec2 i = floor(p);
         vec2 f = fract(p);
-        float a = hash12(i);
-        float b = hash12(i + vec2(1.0, 0.0));
-        float c = hash12(i + vec2(0.0, 1.0));
-        float d = hash12(i + vec2(1.0, 1.0));
+        float a = hash(i);
+        float b = hash(i + vec2(1.0, 0.0));
+        float c = hash(i + vec2(0.0, 1.0));
+        float d = hash(i + vec2(1.0, 1.0));
         vec2 u = f * f * (3.0 - 2.0 * f);
-        return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+        return mix(a, b, u.x) +
+               (c - a) * u.y * (1.0 - u.x) +
+               (d - b) * u.x * u.y;
       }
 
       float fbm(vec2 p) {
@@ -101,7 +82,7 @@ const Lightning = ({
         float a = 0.5;
         for (int i = 0; i < OCTAVE_COUNT; i++) {
           v += a * noise(p);
-          p = rotate2d(0.5) * p * 2.0;
+          p *= 2.0;
           a *= 0.5;
         }
         return v;
@@ -113,14 +94,21 @@ const Lightning = ({
         uv.x *= iResolution.x / iResolution.y;
         uv.x += uXOffset;
 
-        uv += fbm(uv * uSize + iTime * uSpeed) * 1.2;
+        // organic motion
+        uv += fbm(uv * uSize + iTime * uSpeed) * 0.6;
 
         float d = abs(uv.x);
-        vec3 base = hsv2rgb(vec3(uHue / 360.0, 0.7, 0.9));
-        vec3 col = base * pow(0.05 / d, 1.2) * uIntensity;
 
-        // ✅ IMPORTANT: alpha < 1.0 (NO BLACK SCREEN)
-        gl_FragColor = vec4(col, 0.35);
+        vec3 base = hsv2rgb(vec3(uHue / 360.0, 0.7, 0.9));
+
+        // 🌫️ ambient glow (NOT a beam)
+        float glow = pow(1.0 - smoothstep(0.0, 0.8, d), 2.0);
+        vec3 color = base * glow * uIntensity;
+
+        // soft transparency
+        float alpha = glow * 0.25;
+
+        gl_FragColor = vec4(color, alpha);
       }
     `;
 
@@ -159,14 +147,26 @@ const Lightning = ({
 
     const uRes = gl.getUniformLocation(program, "iResolution");
     const uTime = gl.getUniformLocation(program, "iTime");
+    const uHueLoc = gl.getUniformLocation(program, "uHue");
+    const uXLoc = gl.getUniformLocation(program, "uXOffset");
+    const uSpeedLoc = gl.getUniformLocation(program, "uSpeed");
+    const uIntLoc = gl.getUniformLocation(program, "uIntensity");
+    const uSizeLoc = gl.getUniformLocation(program, "uSize");
 
     const start = performance.now();
 
     const render = () => {
       resizeCanvas();
       gl.viewport(0, 0, canvas.width, canvas.height);
+
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.uniform1f(uTime, (performance.now() - start) / 1000);
+      gl.uniform1f(uHueLoc, hue);
+      gl.uniform1f(uXLoc, xOffset);
+      gl.uniform1f(uSpeedLoc, speed);
+      gl.uniform1f(uIntLoc, intensity);
+      gl.uniform1f(uSizeLoc, size);
+
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       requestAnimationFrame(render);
     };
