@@ -2,6 +2,7 @@
   "dependencies": {
     "framer-motion": "^12.23.26",
     "ogl": "^1.0.11",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.11.0"
   }
 }
